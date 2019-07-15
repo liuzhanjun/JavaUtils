@@ -1,6 +1,7 @@
 package com.yun.hai.http;
 
 import com.google.gson.internal.$Gson$Types;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
 
 import java.lang.reflect.ParameterizedType;
@@ -10,14 +11,21 @@ import java.lang.reflect.Type;
  * Created by 刘展俊 on 2017/4/22.
  */
 
-public abstract class CallBack <R>extends DisposableObserver<R> {
+public abstract class CallBack<R> extends DisposableObserver<R> {
+
+
     public abstract void before();
+
     public abstract void success(R result);
+
     public abstract void failure(HttpUtils.NetThrowable error);
+
     public abstract void finish();
-    public void progress(long currentByte,long countByte){
+
+    public void progress(long currentByte, long countByte) {
 
     }
+
     private Type mType;
 
     public Type getmType() {
@@ -53,4 +61,6 @@ public abstract class CallBack <R>extends DisposableObserver<R> {
     public void onComplete() {
         finish();
     }
+
+
 }

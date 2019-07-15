@@ -3,45 +3,52 @@ package com.yun.hai;
 
 import beans.Address;
 import beans.Human;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.yun.hai.In.ComeRequestIn;
+import com.yun.hai.effctivetest.TestBuild;
 import com.yun.hai.http.CallBack;
 import com.yun.hai.http.HttpUtils;
-import io.reactivex.*;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Function;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
-import jdk.nashorn.internal.parser.TokenType;
-import okhttp3.*;
-
-import java.io.IOException;
 
 /**
  * Hello world!
- *
  */
-public class App 
-{
+public class App {
 
-    public static void main(String[] args )
-    {
+    private static String url;
 
-        HttpUtils.httpUtils.getInstance();
+    public static void main(String[] args) {
 
-        Address address=new Address();
+        TestBuild.test();////Builder 构造器实现案例
+        url = "http://localhost:8080/Myapp1//MyApp";
+
+        request();
+    }
+
+    public static void request() {
+        Address address = new Address();
         address.setLongitude(4545.44);
         address.setLatitude(45.55);
-        HttpUtils.httpUtils.requestPost("http://localhost:8080/Myapp1//MyApp", address, new CallBack<Human>() {
+
+
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+            requet(address);
+//            System.out.println(url);
+
+        }
+    }
+
+
+    private static void requet(ComeRequestIn.RequestModel model) {
+        HttpUtils.httpUtils.getInstance();
+        HttpUtils.httpUtils.requestPost(url, model, new CallBack<Human>() {
             @Override
             public void before() {
-                
+
             }
 
             @Override
             public void success(Human result) {
-            System.out.println(result.toString());
-            
+                System.out.println(result.toString());
+
             }
 
             @Override
@@ -51,11 +58,9 @@ public class App
 
             @Override
             public void finish() {
-
+                HttpUtils.httpUtils.clear();
             }
         });
-
-//        sleep(10000);
     }
 
     private static void sleep(int millis) {
@@ -67,19 +72,4 @@ public class App
         }
     }
 
-
-
-
-
-    public static class MyOnSubscribe implements ObservableOnSubscribe<String>{
-
-        @Override
-        public void subscribe(ObservableEmitter<String> obse) throws Exception {
-            obse.onNext("你好");
-            System.out.println("===============开始");
-            
-            System.out.println(Thread.currentThread().getId());
-            
-        }
-    }
 }

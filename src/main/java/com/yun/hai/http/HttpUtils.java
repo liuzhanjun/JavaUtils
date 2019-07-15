@@ -28,9 +28,13 @@ public enum HttpUtils {
         }
     };
 
+    private Observable<String> observable;
+    private String form = "form";
+    private String json = "json";
+
     public abstract HttpUtils getInstance();
 
-    String TAG=null;
+    String TAG = null;
 
     HttpUtils() {
 
@@ -45,32 +49,38 @@ public enum HttpUtils {
     }
 
     CompositeDisposable disposables = new CompositeDisposable();
-    private  static String PROTOCOL_CHARSET = "UTF-8";
-    private  static String PROTOCOL_CONTENT_TYPE_JSON = String.format(
+    private static String PROTOCOL_CHARSET = "UTF-8";
+    private static String PROTOCOL_CONTENT_TYPE_JSON = String.format(
             "application/json; charset=%s", new Object[]{PROTOCOL_CHARSET});
 
     private static String PROTOCOL_CONTENT_TYPE_FORM = String.format(
             "application/x-www-form-urlencoded; charset=%s",
             new Object[]{PROTOCOL_CHARSET});
-    private static Gson mGson=new Gson();
+    private Gson mGson = new Gson();
+
+
+    private RequetstPostSub rps = new RequetstPostSub();
+
+    OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+    OkHttpClient client = builder.build();
+
+    DisposableObserver v;
+
 
     /**
-     *
      * @param url
      * @param model
      * @param <T>
      */
-    public <T> void  requestPost(String url, ComeRequestIn.RequestModel model, CallBack<T> disCallBack){
+    public <T> void requestPost(String url, ComeRequestIn.RequestModel model, CallBack<T> disCallBack) {
 
 
-        final Type type=disCallBack.getmType();
-        RequetstPostSub rps=new RequetstPostSub();
+        final Type type = disCallBack.getmType();
         rps.setRequestModel(model);
         rps.setUrl(url);
-
-
-        Observable<String> observable=Observable.create(rps);
-        DisposableObserver<T> v = observable.map(new Function<String, T>() {
+        observable = Observable.create(rps);
+        v = observable.map(new Function<String, T>() {
             @Override
             public T apply(String s) throws Throwable {
                 if (null == s) {
@@ -85,13 +95,12 @@ public enum HttpUtils {
             }
         })
                 .subscribeWith(disCallBack);
-
         disposables.add(v);
 
     }
 
-    public static class RequetstPostSub implements ObservableOnSubscribe<String> {
-//        url = "http://localhost:8080/Myapp1//MyApp";
+    public class RequetstPostSub implements ObservableOnSubscribe<String> {
+        //        url = "http://localhost:8080/Myapp1//MyApp";
         private ComeRequestIn.RequestModel requestModel;
         private String url;
 
@@ -105,14 +114,12 @@ public enum HttpUtils {
 
         @Override
         public void subscribe(ObservableEmitter<String> observableEmitter) throws Exception {
-            RequestBody body=RequestBody.create(getMediaType("form"),
+            RequestBody body = RequestBody.create(getMediaType("form"),
                     getBody(requestModel));
-            OkHttpClient.Builder builder=new OkHttpClient.Builder();
+
 //            builder.addInterceptor()添加拦截器
 //            builder.connectTimeout()设置连接超时
-            OkHttpClient client=builder.build();
-
-            Request request=new Request.Builder()
+            Request request = new Request.Builder()
 //                    .addHeader()//添加请求头
                     .url(url)
                     .post(body)
@@ -120,48 +127,59 @@ public enum HttpUtils {
             try {
 
                 Response response = client.newCall(request).execute();
-
                 observableEmitter.onNext(response.body().string());
             } catch (IOException e) {
                 e.printStackTrace();
                 observableEmitter.onError(e);
-            }finally {
-                observableEmitter.onComplete();
             }
+            observableEmitter.onComplete();
+
         }
     }
 
 
     /**
-     *
-     * @param var  取值 form json
+     * 清空注册
+     */
+    public void clear() {
+        disposables.clear();
+        observable = null;
+        v = null;
+    }
+
+    /**
+     * @param var 取值 form json
      * @return
      */
-   public static MediaType getMediaType (String var){
-        if ("form".equals(var)){
+    public MediaType getMediaType(String var) {
+        if (form.equals(var)) {
             return MediaType.parse(PROTOCOL_CONTENT_TYPE_FORM);
-        }else if("json".equals(var)){
-            return MediaType.parse(PROTOCOL_CONTENT_TYPE_JSON);
-        }else {
-            return MediaType.parse(PROTOCOL_CONTENT_TYPE_FORM);
+        } else {
+            if (json.equals(var)) {
+                return MediaType.parse(PROTOCOL_CONTENT_TYPE_JSON);
+            } else {
+                return MediaType.parse(PROTOCOL_CONTENT_TYPE_FORM);
+            }
         }
 
-   }
+    }
 
 
-    public static byte[] getBody(Object obj) {
+    public byte[] getBody(Object obj) {
         if (obj != null) {
             Map<String, String> params = jsonToMap(obj);
             if (params != null && params.size() > 0) {
                 return encodeParameters(params, PROTOCOL_CHARSET);
             }
+            params.clear();
+            params = null;
         }
         return null;
     }
 
 
-    private static byte[] encodeParameters(Map<String, String> params,
-                                           String paramsEncoding) {
+    private byte[] encodeParameters(Map<String, String> params,
+                                    String paramsEncoding) {
         StringBuilder encodedParams = new StringBuilder();
         try {
             for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -172,23 +190,24 @@ public enum HttpUtils {
                         paramsEncoding));
                 encodedParams.append('&');
             }
-            encodedParams.delete(encodedParams.length()-1,encodedParams.length());
-            
-            System.out.println(encodedParams.toString());
-            
-            return encodedParams.toString().getBytes(paramsEncoding);
+            encodedParams.delete(encodedParams.length() - 1, encodedParams.length());
+
+            byte[] btype = encodedParams.toString().getBytes(paramsEncoding);
+            encodedParams = null;
+            return btype;
         } catch (UnsupportedEncodingException uee) {
             throw new RuntimeException("Encoding not supported: "
                     + paramsEncoding, uee);
         }
     }
+
     /**
      * 将json to map
      *
      * @param obj
      * @return
      */
-    public static HashMap<String, String> jsonToMap(Object obj) {
+    public HashMap<String, String> jsonToMap(Object obj) {
         if (obj == null) {
             return null;
         }
@@ -210,7 +229,7 @@ public enum HttpUtils {
         return map;
     }
 
-    public static class NetThrowable extends Throwable {
+    public class NetThrowable extends Throwable {
         private int status;
         private String RequestString;
 
