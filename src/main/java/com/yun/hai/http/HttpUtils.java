@@ -10,6 +10,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -66,6 +67,10 @@ public enum HttpUtils {
     OkHttpClient client = builder.build();
 
     DisposableObserver v;
+
+
+
+
 
 
     /**
@@ -131,9 +136,9 @@ public enum HttpUtils {
             } catch (IOException e) {
                 e.printStackTrace();
                 observableEmitter.onError(e);
+            } finally {
+                observableEmitter.onComplete();
             }
-            observableEmitter.onComplete();
-
         }
     }
 
@@ -151,7 +156,7 @@ public enum HttpUtils {
      * @param var 取值 form json
      * @return
      */
-    public MediaType getMediaType(String var) {
+    private MediaType getMediaType(String var) {
         if (form.equals(var)) {
             return MediaType.parse(PROTOCOL_CONTENT_TYPE_FORM);
         } else {
@@ -165,7 +170,7 @@ public enum HttpUtils {
     }
 
 
-    public byte[] getBody(Object obj) {
+    private byte[] getBody(Object obj) {
         if (obj != null) {
             Map<String, String> params = jsonToMap(obj);
             if (params != null && params.size() > 0) {
@@ -207,7 +212,7 @@ public enum HttpUtils {
      * @param obj
      * @return
      */
-    public HashMap<String, String> jsonToMap(Object obj) {
+    private HashMap<String, String> jsonToMap(Object obj) {
         if (obj == null) {
             return null;
         }

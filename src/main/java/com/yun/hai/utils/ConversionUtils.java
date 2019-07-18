@@ -70,4 +70,12 @@ public class ConversionUtils {
         }
         return (int) nub;
     }
+
+
+    public static boolean isEven(int a) {
+        if ((a & 1) == 1) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -7,6 +7,8 @@ import com.yun.hai.In.ComeRequestIn;
 import com.yun.hai.effctivetest.TestBuild;
 import com.yun.hai.http.CallBack;
 import com.yun.hai.http.HttpUtils;
+import com.yun.hai.threadtest.A;
+import com.yun.hai.utils.ConversionUtils;
 
 /**
  * Hello world!
@@ -21,6 +23,11 @@ public class App {
         url = "http://localhost:8080/Myapp1//MyApp";
 
         request();
+
+        System.out.println(ConversionUtils.isEven(10));
+
+//        A a=new A();
+//        a.Test();
     }
 
     public static void request() {
@@ -28,18 +35,20 @@ public class App {
         address.setLongitude(4545.44);
         address.setLatitude(45.55);
 
+        System.out.println(Thread.currentThread().getName());
 
-        for (int i = 0; i < Integer.MAX_VALUE; i++) {
-            requet(address);
+//        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+        requet(address);
 //            System.out.println(url);
 
-        }
+//        }
+        sleep(1000);
     }
 
 
     private static void requet(ComeRequestIn.RequestModel model) {
         HttpUtils.httpUtils.getInstance();
-        HttpUtils.httpUtils.requestPost(url, model, new CallBack<Human>() {
+        CallBack<Human> callBack = new CallBack<Human>() {
             @Override
             public void before() {
 
@@ -47,7 +56,7 @@ public class App {
 
             @Override
             public void success(Human result) {
-                System.out.println(result.toString());
+                System.out.println(result.toString()+"==="+Thread.currentThread().getName());
 
             }
 
@@ -59,8 +68,10 @@ public class App {
             @Override
             public void finish() {
                 HttpUtils.httpUtils.clear();
+
             }
-        });
+        };
+        HttpUtils.httpUtils.requestPost(url, model, callBack);
     }
 
     private static void sleep(int millis) {
