@@ -25,10 +25,10 @@ public class TestBuild {
     public static void request(){
 
 
-        for (int i = 0; i < 25; i++) {
+
             App.request();
 
-        }
+
 
 
     }

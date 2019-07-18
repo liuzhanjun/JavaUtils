@@ -2,6 +2,8 @@ package com.yun.hai;
 
 
 import beans.Address;
+import beans.B;
+import beans.C;
 import beans.Human;
 import com.yun.hai.In.ComeRequestIn;
 import com.yun.hai.effctivetest.TestBuild;
@@ -23,9 +25,7 @@ public class App {
         url = "http://localhost:8080/Myapp1//MyApp";
         TestBuild.request();
 
-        while (true){
 
-        }
 //        System.out.println(ConversionUtils.isEven(10));
 
 //        A a=new A();
@@ -34,17 +34,68 @@ public class App {
 
     public static void request() {
         Address address = new Address();
-        address.setLongitude(4545.44);
-        address.setLatitude(45.55);
+
 
         System.out.println(Thread.currentThread().getName());
 
-//        for (int i = 0; i < Integer.MAX_VALUE; i++) {
-        requet(address);
+//        for (int i = 0; i < 10; i++) {
+//            address.setName(String.format("%d", i));
+                requet(address);
 //            System.out.println(url);
 
 //        }
         sleep(1000);
+        address.setName("1");
+        HttpUtils.httpUtils.requestPost(url, address, new CallBack<B>() {
+            @Override
+            public void before() {
+
+            }
+
+            @Override
+            public void success(B result) {
+            System.out.println(result.getName());
+
+            }
+
+            @Override
+            public void failure(HttpUtils.NetThrowable error) {
+
+            }
+
+            @Override
+            public void finish() {
+
+            }
+        });
+
+
+
+        Address address1=new Address();
+        address1.setName("2");
+
+        HttpUtils.httpUtils.requestPost(url, address1, new CallBack<C>() {
+            @Override
+            public void before() {
+
+            }
+
+            @Override
+            public void success(C result) {
+                System.out.println(result.getTip());
+
+            }
+
+            @Override
+            public void failure(HttpUtils.NetThrowable error) {
+
+            }
+
+            @Override
+            public void finish() {
+
+            }
+        });
     }
 
 
