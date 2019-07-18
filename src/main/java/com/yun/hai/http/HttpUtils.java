@@ -34,7 +34,7 @@ public enum HttpUtils {
     private String json = "json";
 
     public abstract HttpUtils getInstance();
-
+    private Functions functions;
     String TAG = null;
 
     HttpUtils() {
@@ -85,25 +85,41 @@ public enum HttpUtils {
         rps.setRequestModel(model);
         rps.setUrl(url);
         observable = Observable.create(rps);
-        v = observable.map(new Function<String, T>() {
-            @Override
-            public T apply(String s) throws Throwable {
-                if (null == s) {
-                    return null;
-                }
-                if (String.class.toString().equals(
-                        type.toString())) {
-                    return (T) s;
-                }
-                T result = mGson.fromJson(s, type);
-                return result;
-            }
-        })
+        functions=new Functions<T>();
+        functions.setType(type);
+        functions.setGson(mGson);
+        v = (DisposableObserver) observable.map(functions)
                 .subscribeWith(disCallBack);
         disposables.add(v);
 
     }
 
+
+    private static  class Functions<S> implements io.reactivex.functions.Function<String,S> {
+        private Type type;
+        private Gson mGson;
+
+        public void setType(Type type) {
+            this.type = type;
+        }
+
+        public void setGson(Gson gson) {
+            this.mGson = gson;
+        }
+
+        @Override
+        public S apply(String s) throws Throwable {
+            if (null == s) {
+                return null;
+            }
+            if (String.class.toString().equals(
+                    type.toString())) {
+                return (S) s;
+            }
+            S result = mGson.fromJson(s, type);
+            return result;
+        }
+    }
     public class RequetstPostSub implements ObservableOnSubscribe<String> {
         //        url = "http://localhost:8080/Myapp1//MyApp";
         private ComeRequestIn.RequestModel requestModel;

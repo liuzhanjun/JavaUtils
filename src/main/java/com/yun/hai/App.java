@@ -21,10 +21,12 @@ public class App {
 
         TestBuild.test();////Builder 构造器实现案例
         url = "http://localhost:8080/Myapp1//MyApp";
+        TestBuild.request();
 
-        request();
+        while (true){
 
-        System.out.println(ConversionUtils.isEven(10));
+        }
+//        System.out.println(ConversionUtils.isEven(10));
 
 //        A a=new A();
 //        a.Test();

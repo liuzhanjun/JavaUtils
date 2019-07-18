@@ -1,5 +1,6 @@
 package com.yun.hai.effctivetest;
 
+import com.yun.hai.App;
 import com.yun.hai.effctivetest.staticbuilder.House;
 
 public class TestBuild {
@@ -17,6 +18,18 @@ public class TestBuild {
 
 
         System.out.println(house.toString());
+
+    }
+
+
+    public static void request(){
+
+
+        for (int i = 0; i < 25; i++) {
+            App.request();
+
+        }
+
 
     }
 
