@@ -8,9 +8,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -34,12 +32,14 @@ public enum HttpUtils {
     private String json = "json";
 
     public abstract HttpUtils getInstance();
-    private Functions functions;
+
+
     String TAG = null;
 
-    HttpUtils() {
+    private HttpUtils() {
 
     }
+
 
     public void setTAG(String TAG) {
         this.TAG = TAG;
@@ -67,11 +67,7 @@ public enum HttpUtils {
     OkHttpClient client = builder.build();
 
     DisposableObserver v;
-
-
-
-
-
+//    private Functions functions = new Functions();
 
     /**
      * @param url
@@ -80,22 +76,23 @@ public enum HttpUtils {
      */
     public <T> void requestPost(String url, ComeRequestIn.RequestModel model, CallBack<T> disCallBack) {
 
-
         final Type type = disCallBack.getmType();
         rps.setRequestModel(model);
         rps.setUrl(url);
         observable = Observable.create(rps);
-        functions=new Functions<T>();
+        Functions functions = new Functions<T>();
         functions.setType(type);
         functions.setGson(mGson);
         v = (DisposableObserver) observable.map(functions)
                 .subscribeWith(disCallBack);
         disposables.add(v);
 
+
+
     }
 
 
-    private static  class Functions<S> implements io.reactivex.functions.Function<String,S> {
+    private class Functions<S> implements io.reactivex.functions.Function<String, S> {
         private Type type;
         private Gson mGson;
 
@@ -120,6 +117,7 @@ public enum HttpUtils {
             return result;
         }
     }
+
     public class RequetstPostSub implements ObservableOnSubscribe<String> {
         //        url = "http://localhost:8080/Myapp1//MyApp";
         private ComeRequestIn.RequestModel requestModel;

@@ -12,18 +12,29 @@ import com.yun.hai.http.HttpUtils;
 import com.yun.hai.threadtest.A;
 import com.yun.hai.utils.ConversionUtils;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Hello world!
  */
 public class App {
 
-    private static String url;
+    public static String url;
 
     public static void main(String[] args) {
 
         TestBuild.test();////Builder 构造器实现案例
         url = "http://localhost:8080/Myapp1//MyApp";
-        TestBuild.request();
+
+
+        TestBuild build=new TestBuild();
+        build.request();
+
+
+//        request();
+        while (true) {
+
+        }
 
 
 //        System.out.println(ConversionUtils.isEven(10));
@@ -31,6 +42,7 @@ public class App {
 //        A a=new A();
 //        a.Test();
     }
+
 
     public static void request() {
         Address address = new Address();
@@ -40,7 +52,7 @@ public class App {
 
 //        for (int i = 0; i < 10; i++) {
 //            address.setName(String.format("%d", i));
-                requet(address);
+        requet(address);
 //            System.out.println(url);
 
 //        }
@@ -54,7 +66,7 @@ public class App {
 
             @Override
             public void success(B result) {
-            System.out.println(result.getName());
+                System.out.println(result.getName());
 
             }
 
@@ -70,8 +82,7 @@ public class App {
         });
 
 
-
-        Address address1=new Address();
+        Address address1 = new Address();
         address1.setName("2");
 
         HttpUtils.httpUtils.requestPost(url, address1, new CallBack<C>() {
@@ -109,7 +120,7 @@ public class App {
 
             @Override
             public void success(Human result) {
-                System.out.println(result.toString()+"==="+Thread.currentThread().getName());
+                System.out.println(result.toString() + "===" + Thread.currentThread().getName());
 
             }
 

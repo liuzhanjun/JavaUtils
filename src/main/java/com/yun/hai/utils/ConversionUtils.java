@@ -1,5 +1,6 @@
 package com.yun.hai.utils;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,4 +79,42 @@ public class ConversionUtils {
         }
         return true;
     }
+
+
+    /**
+     * 将data 转为对应字节长度的数
+     *
+     * @param data
+     * @param len
+     * @return
+     */
+    public static byte[] getBytes(int data, int len) {
+        // 0   len-1
+        //1   len-2
+        // 2   len-3
+        byte[] bytes = new byte[len];
+        for (int i = 0; i < len; i++) {
+            bytes[len - i - 1] = (byte) ((data & (0xff << (i * 8))) >> (i * 8));
+        }
+        return bytes;
+    }
+
+    /**
+     * 将对应字节长度的数转换为int
+     * 字节长度是bytes数组的长度
+     *
+     * @param bytes
+     * @return
+     */
+    public static int getInt(byte[] bytes) {
+        int count = 0;
+        int len = bytes.length;
+
+        for (int i = bytes.length - 1; i >= 0; i--) {
+            count |= ((0xff << ((len - i - 1) * 8)) & bytes[i] << ((len - i - 1) * 8));
+        }
+        return count;
+    }
+
+
 }
