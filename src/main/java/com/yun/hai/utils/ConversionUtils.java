@@ -82,7 +82,9 @@ public class ConversionUtils {
 
 
     /**
+     * 10进制转二进制字节数组
      * 将data 转为对应字节长度的数
+     * 与getInt互转
      *
      * @param data
      * @param len
@@ -100,8 +102,9 @@ public class ConversionUtils {
     }
 
     /**
-     * 将对应字节长度的数转换为int
+     * 将对应二进制字节长度的数转换为10进制
      * 字节长度是bytes数组的长度
+     * 与getBytes互转
      *
      * @param bytes
      * @return
@@ -116,5 +119,52 @@ public class ConversionUtils {
         return count;
     }
 
+
+    /**
+     * 10进制转16进制
+     *
+     * @param n
+     * @return
+     */
+    private static String intToHex(int n) {
+        //StringBuffer s = new StringBuffer();
+        StringBuilder sb = new StringBuilder(8);
+        String a;
+        char[] b = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+        while (n != 0) {
+            sb = sb.append(b[n % 16]);
+            n = n / 16;
+        }
+        a = sb.reverse().toString();
+        return a;
+    }
+
+
+    public static byte[] getIMEI(String IMEI) {
+        int len = IMEI.length();
+        int[] IMEIS = new int[(len / 2) + len % 2];
+        int len2 = IMEIS.length;
+        System.out.println(IMEIS.length);
+        //将IMEIS中的元素看作16进制转位10进制
+        for (int i = len2 - 1; i >= 0; i--) {
+            IMEIS[i] = Integer.parseInt(IMEI.substring(len - 2 <= 0 ? 0 : len - 2, len), 16);
+            len -= 2;
+        }
+
+
+        byte[] result = new byte[len2];
+        for (int imei : IMEIS) {
+            System.out.print(imei + "|");
+
+        }
+        System.out.println();
+
+        for (int i = 0; i < IMEIS.length; i++) {
+            result[i] = getBytes(IMEIS[i], 1)[0];
+        }
+
+
+        return result;
+    }
 
 }
