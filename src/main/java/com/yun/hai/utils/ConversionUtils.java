@@ -1,16 +1,13 @@
 package com.yun.hai.utils;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class ConversionUtils {
 
 
     /**
-     * 十进制转换成二进制
+     * 十进制转换成二进制字符串
      *
      * @param ten
      * @return
@@ -73,6 +70,12 @@ public class ConversionUtils {
     }
 
 
+    /**
+     * 判断整数是否是偶数
+     *
+     * @param a
+     * @return
+     */
     public static boolean isEven(int a) {
         if ((a & 1) == 1) {
             return false;
@@ -85,6 +88,8 @@ public class ConversionUtils {
      * 10进制转二进制字节数组
      * 将data 转为对应字节长度的数
      * 与getInt互转
+     * 如果data的值超过了字节长度所能表示的长度就会重新从0开始
+     * 比如1个字节能表示的最大数为255，则256则会表示为0
      *
      * @param data
      * @param len
@@ -140,24 +145,25 @@ public class ConversionUtils {
     }
 
 
-    public static byte[] getIMEI(String IMEI) {
-        int len = IMEI.length();
+    /**
+     * 获得imei ，其功能也是将16进制字符串转为二进制字节数组
+     *
+     * @param ox
+     * @return
+     */
+    public static byte[] getoXBinary(String ox) {
+        int len = ox.length();
         int[] IMEIS = new int[(len / 2) + len % 2];
         int len2 = IMEIS.length;
         System.out.println(IMEIS.length);
         //将IMEIS中的元素看作16进制转位10进制
         for (int i = len2 - 1; i >= 0; i--) {
-            IMEIS[i] = Integer.parseInt(IMEI.substring(len - 2 <= 0 ? 0 : len - 2, len), 16);
+            IMEIS[i] = Integer.parseInt(ox.substring(len - 2 <= 0 ? 0 : len - 2, len), 16);
             len -= 2;
         }
 
 
         byte[] result = new byte[len2];
-        for (int imei : IMEIS) {
-            System.out.print(imei + "|");
-
-        }
-        System.out.println();
 
         for (int i = 0; i < IMEIS.length; i++) {
             result[i] = getBytes(IMEIS[i], 1)[0];
@@ -166,5 +172,15 @@ public class ConversionUtils {
 
         return result;
     }
+
+
+    /**
+     * @param bytes 获得一个字节的表示的整数
+     * @return
+     */
+    public static int getIntByByte(byte bytes) {
+        return bytes & 0xff;
+    }
+
 
 }
